@@ -22,10 +22,18 @@ namespace todoproject.Controllers
         }
         public ActionResult Index()
         {
-            
+            ClaimsIdentity identity = User.Identity as ClaimsIdentity;
+
+
+            Claim userIdClaim = identity?.FindFirst("UserId");
+
+
+            string userIdString = userIdClaim?.Value;
+            int userId;
+            int.TryParse(userIdString, out userId);
             TasksViewModel tasksView = new TasksViewModel
             {
-                Tasks = _context.Tasks.Where(t => t.UserId == 1).ToList()
+                Tasks = _context.Tasks.Where(t => t.UserId == userId).ToList()
             };
             return View(tasksView);
         }
@@ -69,7 +77,7 @@ namespace todoproject.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int? TaskId)
+        public ActionResult Delete(PopulateTaskViewModel taskViewModel,int? TaskId)
         {
             if(TaskId == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -81,9 +89,9 @@ namespace todoproject.Controllers
                 return RedirectToAction("Index", "Tasks");
             }
             ModelState.AddModelError("TaskId", "something went wrong");
-            return RedirectToAction("Index", "Tasks");
+            return RedirectToAction("Index", "Tasks",taskViewModel);
         }
-        public ActionResult Update(int? TaskId)
+        public ActionResult Update(PopulateTaskViewModel taskViewModel,int? TaskId)
         {
             if(TaskId == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -94,35 +102,42 @@ namespace todoproject.Controllers
                 ModelState.AddModelError("TaskTitle", "error");
                 return View("Update");
             }
-            var TaskModel = new PopulateTaskViewModel
-            {
-                TaskId = task.TaskId,
-                TaskTitle = task.TaskTitle,
-                TaskDescription = task.TaskDescription,
-                TaskTime = task.TaskTime,
-                Priority = task.Priority
-            };
-            return View("Update",TaskModel);
+
+            taskViewModel.TaskId = task.TaskId;
+            taskViewModel.TaskTitle = task.TaskTitle;
+            taskViewModel.TaskDescription = task.TaskDescription;
+            taskViewModel.TaskTime = task.TaskTime;
+            taskViewModel.Priority = task.Priority;
+            
+            return View("Update",taskViewModel);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Update(PopulateTaskViewModel taskViewModel)
         {
-            if(taskViewModel == null)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            var task = _context.Tasks.Find(taskViewModel.TaskId);
-            if(task == null)
+            if (ModelState.IsValid)
             {
-                return HttpNotFound();
+                if (taskViewModel == null)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                var task = _context.Tasks.Find(taskViewModel.TaskId);
+                if (task == null)
+                {
+                    return HttpNotFound();
+                }
+
+                task.TaskTitle = taskViewModel.TaskTitle;
+                task.TaskDescription = taskViewModel.TaskDescription;
+                task.TaskTime = taskViewModel.TaskTime;
+                task.Priority = taskViewModel.Priority;
+                _context.SaveChanges();
+                return RedirectToAction("Index", "Tasks");
             }
-            task.TaskTitle = taskViewModel.TaskTitle;
-            task.TaskDescription = taskViewModel.TaskDescription;
-            task.TaskTime = taskViewModel.TaskTime;
-            task.Priority = taskViewModel.Priority;
-            _context.SaveChanges();
-            return RedirectToAction("Index","Tasks");
+            ModelState.AddModelError("TaskId", "virify the fields");
+            return View(taskViewModel);
         }
+        
+        
 
     }
 }

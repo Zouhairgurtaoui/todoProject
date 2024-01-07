@@ -39,17 +39,22 @@
 
                         <tr>
                             <td class="buttons-column">
-                                @Html.CheckBoxFor(tr=>t.Status, new { @class = "check-box" })
+                                @Html.CheckBoxFor(tr=>t.Status, new { @class = "check-box",@id="done"})
                             </td>
-                            <th class="todos-column" scope="row">@t.TaskTitle</th>
+                            <th class="todos-column" scope="row" id="task-title">@t.TaskTitle</th>
                             <td class="todos-column">@t.TaskDescription</td>
                             <td class="buttons-column">
 
                                 <div class="flex-grow-1">
-                                    @using (Html.BeginForm("Delete", "Tasks", FormMethod.Post))
+                                    @using (Html.BeginForm("Delete", "Tasks", new {TaskId=t.TaskId},FormMethod.Post))
                                     {
                                         @Html.AntiForgeryToken()
                                         @Html.HiddenFor(tr => t.TaskId)
+                                        @Html.HiddenFor(tr => t.TaskTitle)
+                                        @Html.HiddenFor(tr => t.TaskDescription)
+                                        @Html.HiddenFor(tr => t.TaskTime)
+                                        @Html.HiddenFor(tr => t.Priority)
+                                        @Html.HiddenFor(tr => t.Status)
                                         <input type="submit" class="btn btn-primary" value="Delete" />
                                     }
 </td>
@@ -69,6 +74,19 @@
 
 
 </main>
+<script>
+    let checkBox = document.getElementById("done");
+    const taskTitle = document.getElementById("task-title");
+    var title = taskTitle.textContent;
+    checkBox.addEventListener('change', function () {
+        if (this.checked) {
+            
+            taskTitle.innerHTML = "<s>" + title + "</s>";
+        } else {
+            taskTitle.innerHTML =   title ;
+        }
+    })
+</script>
 
 
 
