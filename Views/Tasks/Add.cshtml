@@ -1,0 +1,41 @@
+﻿
+@model todoproject.Models.PopulateTaskViewModel
+  
+<h2 class="text-center">@ViewBag.Title</h2>
+@using (Html.BeginForm("Add","Tasks",FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+            <div class="form-group">
+                @Html.LabelFor(t => t.TaskTitle, new { @class = "form-label" })
+                @Html.TextBoxFor(t => t.TaskTitle, new { @class = "form-control form-control-lg" })
+                @Html.ValidationMessageFor(t => t.TaskTitle, null, new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(t => t.TaskDescription, new { @class = "form-label" })
+                @Html.TextAreaFor(t => t.TaskDescription, new { @class = "form-control form-control-lg" })
+                @Html.ValidationMessageFor(t => t.TaskDescription, null, new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(t => t.TaskTime, new { @class = "form-label" })
+                @Html.TextBoxFor(t => t.TaskTime, new { @type = "date", @class = "form-control form-control-lg" })
+                @Html.ValidationMessageFor(t => t.TaskTime, null, new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(t => t.Priority, new { @class = "form-label" })
+                @Html.TextBoxFor(t => t.Priority, new { @class = "form-control form-control-lg", @placeHolder = "example: Level 1" })
+                @Html.ValidationMessageFor(t => t.Priority, null, new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10 mt-3 mb-5">
+            <input type="submit" id="form-button" class="btn btn-success" value="Add Task" />
+        </div>
+    </div>
+}

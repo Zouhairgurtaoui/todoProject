@@ -1,0 +1,28 @@
+﻿@if (User.Identity.IsAuthenticated)
+{
+    using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+            <ul class="navbar-nav flex-grow-1">
+                <li>
+                    @Html.ActionLink("Hello " + User.Identity.Name, "Login", "Account", routeValues: null, htmlAttributes: new { title = "Manage", @class = "nav-link" })
+                    
+                </li>
+                <li><button type="submit" class="btn nav-link">Log Out</button></li>
+            </ul>
+        </div>
+    }
+}
+else
+{
+<div class="navbar-right">
+    <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+        <ul class="navbar-nav flex-grow-1">
+            <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink", @class = "nav-link" })</li>
+            <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", @class = "nav-link" })</li>
+        </ul>
+    </div>
+</div>
+        }
+

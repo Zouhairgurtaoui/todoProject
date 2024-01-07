@@ -1,0 +1,75 @@
+﻿@model todoproject.Models.TasksViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<main>
+
+    <h2 class="text-center">hello @User.Identity.Name</h2>
+
+    <a href="Tasks/Add" class="btn btn-primary my-4">
+        <i class="icofont-plus"></i>
+        Add New
+    </a>
+
+  
+
+
+    <div class="alert alert-warning @(Model.Tasks.Any() ? "d-none" : "")">
+        No Tasks added yet!
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+            <table class="table">
+                <thead>
+                    <tr class="table-primary">
+                        <th scope="col">Done</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model.Tasks)
+                    {
+
+                        <tr>
+                            <td class="buttons-column">
+                                @Html.CheckBoxFor(tr=>t.Status, new { @class = "check-box" })
+                            </td>
+                            <th class="todos-column" scope="row">@t.TaskTitle</th>
+                            <td class="todos-column">@t.TaskDescription</td>
+                            <td class="buttons-column">
+
+                                <div class="flex-grow-1">
+                                    @using (Html.BeginForm("Delete", "Tasks", FormMethod.Post))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        @Html.HiddenFor(tr => t.TaskId)
+                                        <input type="submit" class="btn btn-primary" value="Delete" />
+                                    }
+</td>
+                            <td class="buttons-column">
+
+                                @Html.ActionLink("Update", "Update", "Tasks", new { TaskId = t.TaskId }, new {@class="btn btn-primary"})
+
+                            </td>
+
+                        </tr>
+                        
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</main>
+
+
+
+
